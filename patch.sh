@@ -1,0 +1,1 @@
+kubectl patch placement raven-placement --type "json" -p ''[{"op":"add","path":"/spec/predicates/0/requiredClusterSelector/labelSelector/matchExpressions/0/values/1","value":"dr"}]'' -n openshift-gitops

@@ -1,0 +1,36 @@
+# deploy raven
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: raven
+  namespace: openshift-gitops
+spec:
+  generators:
+    - clusterDecisionResource:
+        configMapRef: acm-placement
+        labelSelector:
+          matchLabels:
+            cluster.open-cluster-management.io/placement: raven-placement
+        requeueAfterSeconds: 180
+  template:
+    metadata:
+      name: raven-{{name}}
+      labels:
+        velero.io/exclude-from-backup: "true"
+    spec:
+      destination:
+        namespace: opsroom
+        server: "{{server}}"
+      project: default
+      sources:
+        - path: raven
+          repoURL: https://git.opsroom.nl/24hchallenge/team2/gitops.git
+          targetRevision: main
+          repositoryType: git
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+          - PruneLast=true
